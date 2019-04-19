@@ -23,6 +23,11 @@ data "aws_ami" "node_app_ami" {
   owners = ["291213119936"]
 }
 
+#User data
+data "template_file" "user_data" {
+  template = "${file(var.user_data_file_path)}"
+}
+
 resource "aws_launch_configuration" "node_app_lc" {
   image_id      = "${data.aws_ami.node_app_ami.id}"
   instance_type = "t2.micro"
@@ -30,6 +35,7 @@ resource "aws_launch_configuration" "node_app_lc" {
   lifecycle {
     create_before_destroy = true
   }
+  user_data = "${data.template_file.user_data.rendered}"
 }
 
 resource "aws_autoscaling_group" "node_app_asg" {
