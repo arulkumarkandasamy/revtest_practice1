@@ -31,6 +31,7 @@ data "template_file" "user_data" {
 resource "aws_launch_configuration" "node_app_lc" {
   image_id      = "${data.aws_ami.node_app_ami.id}"
   instance_type = "t2.micro"
+  key_name = "${aws_key_pair.arulkeypair.key_name}"
   security_groups = ["${aws_security_group.node_app_websg.id}"]
   lifecycle {
     create_before_destroy = true
@@ -118,4 +119,9 @@ resource "aws_elb" "elb1" {
   tags {
     Name = "terraform - elb - node-app"
   }
+}
+
+resource "aws_key_pair" "arulkeypair" {
+  key_name   = "arulkeypair"
+  public_key = "${var.id_rsa_pub}"
 }
